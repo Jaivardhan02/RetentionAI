@@ -1,0 +1,44 @@
+# ── Python ────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.Python
+env/
+venv/
+.venv/
+ENV/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Jupyter ───────────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── ML Artifacts (auto-generated — do NOT commit the model binary) ──
+# Uncomment the lines below if you do NOT want to push .joblib files.
+# churn_model.joblib
+# scaler.joblib
+# le_gender.joblib
+# le_subscription.joblib
+# le_contract.joblib
+# feature_names.joblib
+
+# ── OS junk ───────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE ───────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Streamlit cache ───────────────────────────────────────────
+.streamlit/
+
+# ── Misc ──────────────────────────────────────────────────────
+*.log
+*.tmp

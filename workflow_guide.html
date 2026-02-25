@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AntiGravity — Churn Predictor Workflow Guide</title>
+    <style>
+        :root {
+            --bg: #0a0e1a;
+            --card: #111827;
+            --card2: #0f1629;
+            --border: #1e3a5f;
+            --blue: #0066ff;
+            --blue2: #0080ff;
+            --green: #06d6a0;
+            --yellow: #ffd166;
+            --red: #ff4d6d;
+            --text: #e0e6f0;
+            --muted: #7a8fa6;
+            --accent: #1e3a5f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            padding: 32px 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: linear-gradient(135deg, #001f4d 0%, #003080 50%, #001f4d 100%);
+            border: 1px solid #0047b3;
+            border-radius: 16px;
+            padding: 32px 40px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            font-size: 3.5rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .header p {
+            color: var(--muted);
+            margin-top: 6px;
+            font-size: 0.95rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(0, 102, 255, 0.15);
+            border: 1px solid var(--blue);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 0.75rem;
+            color: var(--blue);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-right: 6px;
+            margin-top: 8px;
+        }
+
+        /* ── Section ── */
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--blue2);
+            margin: 32px 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* ── Cards ── */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        /* ── Pipeline Flow ── */
+        .pipeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            margin: 0 0 32px;
+        }
+
+        .pipe-step {
+            background: var(--card2);
+            border: 1px solid var(--border);
+            border-radius: 0;
+            padding: 20px 16px;
+            position: relative;
+            text-align: center;
+        }
+
+        .pipe-step:first-child {
+            border-radius: 12px 0 0 12px;
+        }
+
+        .pipe-step:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
+        .pipe-step:not(:last-child)::after {
+            content: '▶';
+            position: absolute;
+            right: -14px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            color: var(--blue);
+            font-size: 1.2rem;
+            background: var(--bg);
+            padding: 2px;
+            border-radius: 50%;
+        }
+
+        .pipe-num {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--blue);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .pipe-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .pipe-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .pipe-desc {
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+
+        /* ── 2-col grid ── */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        /* ── Steps ── */
+        .step-list {
+            list-style: none;
+        }
+
+        .step-list li {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.88rem;
+            color: #c0cfe0;
+        }
+
+        .step-list li:last-child {
+            border-bottom: none;
+        }
+
+        .step-num {
+            min-width: 24px;
+            height: 24px;
+            background: var(--blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            font-weight: 700;
+            margin-top: 1px;
+        }
+
+        /* ── Code ── */
+        pre,
+        code {
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+            font-size: 0.82rem;
+        }
+
+        pre {
+            background: #05080f;
+            color: #c0cfe0;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+
+        .kw {
+            color: #7dd3fc;
+        }
+
+        /* keywords */
+        .fn {
+            color: #6ee7b7;
+        }
+
+        /* functions */
+        .st {
+            color: #fbbf24;
+        }
+
+        /* strings */
+        .cm {
+            color: #4a5568;
+            font-style: italic;
+        }
+
+        /* comments */
+
+        /* ── File Tree ── */
+        .tree {
+            background: #05080f;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: monospace;
+            font-size: 0.83rem;
+            line-height: 1.9;
+            color: #c0cfe0;
+        }
+
+        .tree .folder {
+            color: #7dd3fc;
+        }
+
+        .tree .model {
+            color: #6ee7b7;
+        }
+
+        .tree .data {
+            color: #fbbf24;
+        }
+
+        .tree .app {
+            color: #c084fc;
+        }
+
+        .tree .cm {
+            color: #4a5568;
+        }
+
+        /* ── Risk Tiers ── */
+        .tier {
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 10px;
+            border: 1px solid;
+        }
+
+        .tier-high {
+            background: rgba(255, 77, 109, 0.08);
+            border-color: var(--red);
+        }
+
+        .tier-med {
+            background: rgba(255, 209, 102, 0.08);
+            border-color: var(--yellow);
+        }
+
+        .tier-low {
+            background: rgba(6, 214, 160, 0.08);
+            border-color: var(--green);
+        }
+
+        .tier-label {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .tier-range {
+            font-size: 0.82rem;
+            color: var(--muted);
+        }
+
+        .tier-action {
+            font-size: 0.85rem;
+            margin-top: 8px;
+            color: #c0cfe0;
+        }
+
+        /* ── Feature Table ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th {
+            background: #0f1629;
+            color: var(--muted);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 10px 14px;
+            text-align: left;
+        }
+
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            color: #c0cfe0;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .imp-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: var(--blue);
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        .tag-high {
+            background: rgba(255, 77, 109, 0.2);
+            color: var(--red);
+            border: 1px solid var(--red);
+        }
+
+        .tag-med {
+            background: rgba(255, 209, 102, 0.2);
+            color: var(--yellow);
+            border: 1px solid var(--yellow);
+        }
+
+        .tag-low {
+            background: rgba(6, 214, 160, 0.2);
+            color: var(--green);
+            border: 1px solid var(--green);
+        }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.8rem;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══════════════════ HEADER ══════════════════ -->
+    <div class="header">
+        <div class="header-icon">🚀</div>
+        <div>
+            <h1>AntiGravity — Churn Intelligence Platform</h1>
+            <p>Complete Workflow Guide &nbsp;•&nbsp; Data → Model → UI → Insights</p>
+            <div>
+                <span class="badge">Random Forest</span>
+                <span class="badge">Streamlit UI</span>
+                <span class="badge">440K Records</span>
+                <span class="badge">AUC ~1.00</span>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════ PIPELINE ══════════════════ -->
+    <div class="section-title">🗺️ End-to-End Pipeline</div>
+
+    <div class="pipeline">
+        <div class="pipe-step">
+            <div class="pipe-num">Step 01</div>
+            <div class="pipe-icon">📊</div>
+            <div class="pipe-title">Raw Data</div>
+            <div class="pipe-desc">440K training rows<br>11 input features</div>
+        </div>
+        <div class="pipe-step">
+            <div class="pipe-num">Step 02</div>
+            <div class="pipe-icon">⚙️</div>
+            <div class="pipe-title">Train Model</div>
+            <div class="pipe-desc">Encode + clean<br>Random Forest fit</div>
+        </div>
+        <div class="pipe-step">
+            <div class="pipe-num">Step 03</div>
+            <div class="pipe-icon">💾</div>
+            <div class="pipe-title">Save Artifacts</div>
+            <div class="pipe-desc">joblib files<br>model + encoders</div>
+        </div>
+        <div class="pipe-step">
+            <div class="pipe-num">Step 04</div>
+            <div class="pipe-icon">🖥️</div>
+            <div class="pipe-title">Streamlit UI</div>
+            <div class="pipe-desc">Predict, analyze<br>& batch process</div>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════ QUICK START ══════════════════ -->
+    <div class="section-title">⚡ Quick Start</div>
+
+    <div class="grid-2">
+        <div class="card">
+            <h3>1️⃣ Install Dependencies</h3>
+            <pre><span class="cm"># In your terminal</span>
+pip install streamlit scikit-learn \
+            pandas numpy matplotlib \
+            plotly joblib</pre>
+        </div>
+        <div class="card">
+            <h3>2️⃣ Train the Model (run once)</h3>
+            <pre><span class="cm"># This creates all .joblib files</span>
+python train_model.py</pre>
+            <h3 style="margin-top:14px">3️⃣ Launch the Dashboard</h3>
+            <pre>streamlit run churn_app.py</pre>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════ FILE STRUCTURE ══════════════════ -->
+    <div class="section-title">📁 Project File Structure</div>
+
+    <div class="card">
+        <div class="tree">
+            <span class="folder">antigravity-churn/</span>
+            │
+            ├── <span class="app">📄 train_model.py</span> <span class="cm">← Run this FIRST — trains and saves the
+                model</span>
+            ├── <span class="app">📄 churn_app.py</span> <span class="cm">← Main Streamlit dashboard</span>
+            │
+            ├── <span class="folder">📊 Data Files</span>
+            │ ├── <span class="data">customer_churn_dataset-training-master.csv</span> <span class="cm">← 440K rows for
+                training</span>
+            │ └── <span class="data">customer_churn_dataset-testing-master.csv</span> <span class="cm">← Use for batch
+                upload</span>
+            │
+            └── <span class="folder">🤖 Saved Artifacts</span> <span class="cm">(auto-created by train_model.py)</span>
+            ├── <span class="model">churn_model.joblib</span> <span class="cm">← Trained RandomForest model</span>
+            ├── <span class="model">le_gender.joblib</span> <span class="cm">← Label encoder for Gender</span>
+            ├── <span class="model">le_subscription.joblib</span> <span class="cm">← Label encoder for Subscription
+                Type</span>
+            ├── <span class="model">le_contract.joblib</span> <span class="cm">← Label encoder for Contract
+                Length</span>
+            └── <span class="model">feature_names.joblib</span> <span class="cm">← Ordered list of feature column
+                names</span>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════ DETAILED STEPS ══════════════════ -->
+    <div class="section-title">🔬 Detailed Workflow Steps</div>
+
+    <div class="grid-2">
+        <div class="card">
+            <h3 style="color: #06d6a0">⚙️ train_model.py — What It Does</h3>
+            <ul class="step-list">
+                <li>
+                    <div class="step-num">1</div>
+                    <div>Loads <code>training.csv</code> (440K rows × 12 cols)</div>
+                </li>
+                <li>
+                    <div class="step-num">2</div>
+                    <div>Drops <code>CustomerID</code> — identified as data leakage in your EDA</div>
+                </li>
+                <li>
+                    <div class="step-num">3</div>
+                    <div>Removes rows with <code>NaN</code> values to ensure clean input</div>
+                </li>
+                <li>
+                    <div class="step-num">4</div>
+                    <div>Encodes categorical columns: <em>Gender, Subscription Type, Contract Length</em> using
+                        <code>LabelEncoder</code>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-num">5</div>
+                    <div>Splits data 80/20 with stratification to preserve churn ratio</div>
+                </li>
+                <li>
+                    <div class="step-num">6</div>
+                    <div>Trains <code>RandomForestClassifier</code> (100 trees, balanced class weights)</div>
+                </li>
+                <li>
+                    <div class="step-num">7</div>
+                    <div>Prints AUC, Classification Report, and Feature Importances</div>
+                </li>
+                <li>
+                    <div class="step-num">8</div>
+                    <div>Saves model + 4 encoders as <code>.joblib</code> files</div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3 style="color: #0080ff">🖥️ churn_app.py — UI Tabs</h3>
+            <ul class="step-list">
+                <li>
+                    <div class="step-num">🎯</div>
+                    <div><strong>Individual Prediction</strong> — Sliders for age, tenure, support calls, payment delay,
+                        contract type, spend, usage. Returns a gauge chart + risk badge + personalised insights.</div>
+                </li>
+                <li>
+                    <div class="step-num">📊</div>
+                    <div><strong>Risk Analysis</strong> — Feature importance bar chart, risk tier definitions table,
+                        churn rate by contract type chart.</div>
+                </li>
+                <li>
+                    <div class="step-num">📂</div>
+                    <div><strong>Batch Processing</strong> — Upload any CSV matching the column schema, get predictions
+                        for all rows, download results sorted by churn risk.</div>
+                </li>
+                <li>
+                    <div class="step-num">📖</div>
+                    <div><strong>How It Works</strong> — Full pipeline diagram, file structure tree, key EDA findings,
+                        and this guide embedded in the app.</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════ FEATURES ══════════════════ -->
+    <div class="section-title">📋 Input Features & Churn Impact</div>
+
+    <div class="card" style="padding:0; overflow:hidden">
+        <table>
+            <tr>
+                <th>Feature</th>
+                <th>Type</th>
+                <th>Range / Values</th>
+                <th>Churn Impact</th>
+                <th>Notes from EDA</th>
+            </tr>
+            <tr>
+                <td><strong>Support Calls</strong></td>
+                <td>Numeric</td>
+                <td>0 – 10</td>
+                <td><span class="tag tag-high">🔴 Very High</span></td>
+                <td>Correlation: 0.51 with churn — strongest predictor</td>
+            </tr>
+            <tr>
+                <td><strong>Contract Length</strong></td>
+                <td>Categorical</td>
+                <td>Annual / Quarterly / Monthly</td>
+                <td><span class="tag tag-high">🔴 Very High</span></td>
+                <td>Monthly: ~62% churn; Annual: ~10% churn</td>
+            </tr>
+            <tr>
+                <td><strong>Payment Delay</strong></td>
+                <td>Numeric</td>
+                <td>0 – 30 days</td>
+                <td><span class="tag tag-high">🔴 High</span></td>
+                <td>High delay strongly indicates disengagement</td>
+            </tr>
+            <tr>
+                <td><strong>Total Spend</strong></td>
+                <td>Numeric</td>
+                <td>$100 – $1,000</td>
+                <td><span class="tag tag-med">🟡 Medium</span></td>
+                <td>Higher spend = lower churn (sticky customers)</td>
+            </tr>
+            <tr>
+                <td><strong>Tenure</strong></td>
+                <td>Numeric</td>
+                <td>1 – 60 months</td>
+                <td><span class="tag tag-med">🟡 Medium</span></td>
+                <td>Short tenure customers churn more often</td>
+            </tr>
+            <tr>
+                <td><strong>Usage Frequency</strong></td>
+                <td>Numeric</td>
+                <td>1 – 30 /month</td>
+                <td><span class="tag tag-med">🟡 Medium</span></td>
+                <td>Low usage predicts disengagement and churn</td>
+            </tr>
+            <tr>
+                <td><strong>Subscription Type</strong></td>
+                <td>Categorical</td>
+                <td>Basic / Standard / Premium</td>
+                <td><span class="tag tag-med">🟡 Medium</span></td>
+                <td>Premium subscribers are most loyal</td>
+            </tr>
+            <tr>
+                <td><strong>Age</strong></td>
+                <td>Numeric</td>
+                <td>18 – 65</td>
+                <td><span class="tag tag-low">🟢 Low</span></td>
+                <td>Minor influence on churn in this dataset</td>
+            </tr>
+            <tr>
+                <td><strong>Last Interaction</strong></td>
+                <td>Numeric</td>
+                <td>1 – 30 days</td>
+                <td><span class="tag tag-low">🟢 Low</span></td>
+                <td>Recency of last touchpoint</td>
+            </tr>
+            <tr>
+                <td><strong>Gender</strong></td>
+                <td>Categorical</td>
+                <td>Female / Male</td>
+                <td><span class="tag tag-low">🟢 Minimal</span></td>
+                <td>Very low predictive power for churn</td>
+            </tr>
+        </table>
+    </div>
+
+
+    <!-- ══════════════════ RISK TIERS ══════════════════ -->
+    <div class="section-title">🚦 Risk Tier System</div>
+
+    <div class="grid-3">
+        <div class="tier tier-high">
+            <div class="tier-label">🔴 HIGH RISK</div>
+            <div class="tier-range">Churn Probability: 65% – 100%</div>
+            <div class="tier-action">
+                <strong>Immediate Action Required:</strong><br>
+                • Assign dedicated CSM<br>
+                • Offer contract upgrade discount<br>
+                • Win-back campaign within 48hrs
+            </div>
+        </div>
+        <div class="tier tier-med">
+            <div class="tier-label">🟡 MEDIUM RISK</div>
+            <div class="tier-range">Churn Probability: 35% – 65%</div>
+            <div class="tier-action">
+                <strong>Proactive Outreach:</strong><br>
+                • Schedule a check-in call<br>
+                • Send usage tips & highlights<br>
+                • Offer loyalty reward
+            </div>
+        </div>
+        <div class="tier tier-low">
+            <div class="tier-label">🟢 LOW RISK</div>
+            <div class="tier-range">Churn Probability: 0% – 35%</div>
+            <div class="tier-action">
+                <strong>Standard Engagement:</strong><br>
+                • Continue normal journey<br>
+                • Consider upsell to Premium<br>
+                • Collect NPS feedback
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════ BATCH CSV GUIDE ══════════════════ -->
+    <div class="section-title">📂 Batch CSV Upload Guide</div>
+
+    <div class="grid-2">
+        <div class="card">
+            <h3>Required CSV Column Headers</h3>
+            <pre>Age, Gender, Tenure, Usage Frequency,
+Support Calls, Payment Delay,
+Subscription Type, Contract Length,
+Total Spend, Last Interaction</pre>
+            <p style="color:var(--muted); font-size:0.82rem; margin-top:10px">
+                ℹ️ CustomerID is optional and will be preserved in output but not used for prediction.
+                Column order does not matter.
+            </p>
+        </div>
+        <div class="card">
+            <h3>Valid Categorical Values</h3>
+            <table>
+                <tr>
+                    <th>Column</th>
+                    <th>Valid Values</th>
+                </tr>
+                <tr>
+                    <td>Gender</td>
+                    <td><code>Female</code> | <code>Male</code></td>
+                </tr>
+                <tr>
+                    <td>Subscription Type</td>
+                    <td><code>Basic</code> | <code>Standard</code> | <code>Premium</code></td>
+                </tr>
+                <tr>
+                    <td>Contract Length</td>
+                    <td><code>Annual</code> | <code>Monthly</code> | <code>Quarterly</code></td>
+                </tr>
+            </table>
+            <p style="color:var(--muted); font-size:0.82rem; margin-top:10px">
+                ⚠️ Values must match exactly (case-sensitive). Rows with missing values will be skipped.
+            </p>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════ TROUBLESHOOTING ══════════════════ -->
+    <div class="section-title">🛠️ Troubleshooting</div>
+
+    <div class="card">
+        <table>
+            <tr>
+                <th>Problem</th>
+                <th>Cause</th>
+                <th>Fix</th>
+            </tr>
+            <tr>
+                <td>⚠️ "Model not found" error</td>
+                <td><code>.joblib</code> files missing</td>
+                <td>Run <code>python train_model.py</code> first</td>
+            </tr>
+            <tr>
+                <td>⚠️ CSV upload fails</td>
+                <td>Wrong column names or missing cols</td>
+                <td>Check headers match the required list exactly</td>
+            </tr>
+            <tr>
+                <td>⚠️ LabelEncoder error</td>
+                <td>Unknown category value in CSV</td>
+                <td>Ensure Gender/Subscription/Contract values match valid options</td>
+            </tr>
+            <tr>
+                <td>⚠️ streamlit not found</td>
+                <td>Package not installed</td>
+                <td>Run <code>pip install streamlit</code></td>
+            </tr>
+            <tr>
+                <td>⚠️ Model too slow</td>
+                <td>Large batch or slow machine</td>
+                <td>Reduce <code>n_estimators</code> in <code>train_model.py</code> to 50</td>
+            </tr>
+        </table>
+    </div>
+
+
+    <!-- ══════════════════ NEXT STEPS ══════════════════ -->
+    <div class="section-title">🚀 Recommended Next Steps</div>
+
+    <div class="grid-3">
+        <div class="card">
+            <h3>🎯 Improve Model</h3>
+            <ul style="font-size:0.85rem; color:#c0cfe0; list-style:disc; padding-left:18px; line-height:2">
+                <li>Try XGBoost / LightGBM</li>
+                <li>Hyperparameter tuning (GridSearchCV)</li>
+                <li>SHAP values for explainability</li>
+                <li>Cross-validate with k-fold</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>🖥️ Extend the UI</h3>
+            <ul style="font-size:0.85rem; color:#c0cfe0; list-style:disc; padding-left:18px; line-height:2">
+                <li>Add authentication (streamlit-authenticator)</li>
+                <li>Email alerts for high-risk customers</li>
+                <li>CRM integration (Salesforce, HubSpot)</li>
+                <li>Historical trend charts</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>☁️ Deploy</h3>
+            <ul style="font-size:0.85rem; color:#c0cfe0; list-style:disc; padding-left:18px; line-height:2">
+                <li>Streamlit Cloud (free, 1-click)</li>
+                <li>Docker + AWS/GCP/Azure</li>
+                <li>Wrap model as REST API (FastAPI)</li>
+                <li>Schedule retraining via Airflow</li>
+            </ul>
+        </div>
+    </div>
+
+
+    <footer>
+        AntiGravity Platform &nbsp;•&nbsp; Churn Intelligence v1.0 &nbsp;•&nbsp;
+        Built with Random Forest + Streamlit &nbsp;•&nbsp;
+        Training AUC: ~1.00
+    </footer>
+
+</body>
+
+</html>
