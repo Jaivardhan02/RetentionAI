@@ -1,0 +1,23 @@
+# Ignore local environment and cache
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Git
+.git/
+.gitignore
+
+# Trained model artifacts (will be regenerated inside container)
+*.joblib
+model_report.txt
+
+# IDE / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Jupyter
+.ipynb_checkpoints/

@@ -42,3 +42,11 @@ desktop.ini
 # ── Misc ──────────────────────────────────────────────────────
 *.log
 *.tmp
+
+# ── Large Dataset files (exceed GitHub limits — keep local only) ─
+Dataset/
+*.csv
+*.csv.zip
+
+# ── Large Notebook binary ────────────────────────────────────────
+*.ipynb

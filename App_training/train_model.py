@@ -54,12 +54,12 @@ BASE_DIR  = os.path.dirname(os.path.abspath(__file__))
 
 # If your CSVs are zipped, pandas reads .zip directly.
 # If they are plain .csv files, just remove the .zip extension below.
-TRAIN_CSV = os.path.join(BASE_DIR, "D:\Churn\Dataset\customer_churn_dataset-training-master.csv.zip")
-TEST_CSV  = os.path.join(BASE_DIR, "D:\Churn\Dataset\customer_churn_dataset-testing-master.csv.zip")
+TRAIN_CSV = os.path.abspath(os.path.join(BASE_DIR, "..", "Dataset", "customer_churn_dataset-training-master.csv.zip"))
+TEST_CSV  = os.path.abspath(os.path.join(BASE_DIR, "..", "Dataset", "customer_churn_dataset-testing-master.csv.zip"))
 
 # Alternatively, if they are still .zip:
-# TRAIN_CSV = os.path.join(BASE_DIR, "D:\Churn\Dataset\customer_churn_dataset-training-master.csv.zip")
-# TEST_CSV  = os.path.join(BASE_DIR, "D:\Churn\Dataset\customer_churn_dataset-testing-master.csv.zip")
+# TRAIN_CSV = os.path.abspath(os.path.join(BASE_DIR, "..", "Dataset", "customer_churn_dataset-training-master.csv.zip"))
+# TEST_CSV  = os.path.abspath(os.path.join(BASE_DIR, "..", "Dataset", "customer_churn_dataset-testing-master.csv.zip"))
 
 RANDOM_STATE = 42
 

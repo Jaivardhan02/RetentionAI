@@ -1,7 +1,7 @@
 """
 ╔══════════════════════════════════════════════════════════════╗
-║        RetentionAI — Customer Churn Predictor      ║
-║        SELF-CONTAINED: Auto-trains model on first run       ║
+║        RetentionAI — Customer Churn Predictor                ║
+║        SELF-CONTAINED: Auto-trains model on first run        ║
 ╚══════════════════════════════════════════════════════════════╝
 
 HOW TO RUN:
@@ -38,8 +38,8 @@ warnings.filterwarnings("ignore")
 #  PATHS  — everything lives next to this script
 # ─────────────────────────────────────────────────────────────
 BASE      = os.path.dirname(os.path.abspath(__file__))
-TRAIN_CSV = os.path.join(BASE, "D:\Churn\Dataset\customer_churn_dataset-training-master.csv.zip")
-TEST_CSV  = os.path.join(BASE, "D:\Churn\Dataset\customer_churn_dataset-testing-master.csv.zip")
+TRAIN_CSV = os.path.abspath(os.path.join(BASE, "..", "Dataset", "customer_churn_dataset-training-master.csv.zip"))
+TEST_CSV  = os.path.abspath(os.path.join(BASE, "..", "Dataset", "customer_churn_dataset-testing-master.csv.zip"))
 
 MODEL_F   = os.path.join(BASE, "churn_model.joblib")
 SCALER_F  = os.path.join(BASE, "scaler.joblib")          # ← NEW: StandardScaler

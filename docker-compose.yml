@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  retentionai:
+    build: .
+    container_name: retentionai-app
+    ports:
+      - "8501:8501"
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
