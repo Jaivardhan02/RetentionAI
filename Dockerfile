@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 # Set working directory
 WORKDIR /app
@@ -11,14 +11,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all project files
-COPY . .
+# Copy project files
+COPY requirements.txt .
+COPY App_training/ ./App_training/
+COPY Dataset/ ./Dataset/
+COPY .streamlit/ ./.streamlit/
 
 # Expose Streamlit port
 EXPOSE 8501
 
 # Health check
-HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl --fail http://localhost:8501/_stcore/health || exit 1
 
 # Run the Streamlit app
 CMD ["streamlit", "run", "App_training/churn_app.py", \

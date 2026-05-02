@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RetentionAI — Customer Churn Predictor</title>
+  <meta name="description" content="RetentionAI predicts customer churn using a Random Forest AI model with 93.7% accuracy. Real-time risk scoring for SaaS businesses.">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0e1a;
+      color: #e0e6f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(0,102,255,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,102,255,0.05) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .glow {
+      position: fixed;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,102,255,0.15) 0%, transparent 70%);
+      top: -100px; left: -100px;
+      animation: pulse 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .glow-2 {
+      position: fixed;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(6,214,160,0.1) 0%, transparent 70%);
+      bottom: -50px; right: -50px;
+      animation: pulse 4s ease-in-out infinite reverse;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 40px 20px;
+      max-width: 700px;
+    }
+
+    .logo {
+      font-size: 5rem;
+      margin-bottom: 16px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #e0e6f0, #0066ff, #06d6a0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: #7a8fa6;
+      margin-bottom: 40px;
+      letter-spacing: 0.5px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(6,214,160,0.1);
+      border: 1px solid rgba(6,214,160,0.3);
+      color: #06d6a0;
+      padding: 6px 16px;
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 40px;
+      letter-spacing: 1px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .stat {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(30,58,95,0.8);
+      border-radius: 12px;
+      padding: 20px 16px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .stat:hover {
+      transform: translateY(-4px);
+      border-color: rgba(0,102,255,0.4);
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #0066ff;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #7a8fa6;
+      margin-top: 4px;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #0066ff, #0044cc);
+      color: white;
+      text-decoration: none;
+      padding: 16px 40px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      transition: all 0.2s;
+      box-shadow: 0 8px 30px rgba(0,102,255,0.3);
+    }
+
+    .cta-btn:hover {
+      background: linear-gradient(135deg, #0080ff, #0055ee);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0,102,255,0.4);
+    }
+
+    .cta-btn span { font-size: 1.3rem; }
+
+    .note {
+      margin-top: 24px;
+      font-size: 0.8rem;
+      color: #3d5270;
+    }
+
+    @media (max-width: 500px) {
+      h1 { font-size: 2rem; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="glow"></div>
+  <div class="glow-2"></div>
+
+  <div class="container">
+    <div class="logo">🚀</div>
+    <div class="badge">✦ AI-POWERED CHURN INTELLIGENCE</div>
+    <h1>RetentionAI</h1>
+    <p class="subtitle">Real-time customer churn prediction powered by Random Forest AI</p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-value">93.7%</div>
+        <div class="stat-label">Model Accuracy</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">440K</div>
+        <div class="stat-label">Training Rows</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">0.95</div>
+        <div class="stat-label">AUC Score</div>
+      </div>
+    </div>
+
+    <a href="https://YOUR-APP-NAME.streamlit.app" class="cta-btn" id="launch-app">
+      <span>🎯</span>
+      Launch App
+    </a>
+
+    <p class="note">Hosted on Streamlit Cloud · Powered by scikit-learn</p>
+  </div>
+</body>
+</html>

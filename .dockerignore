@@ -1,6 +1,9 @@
-# Ignore local environment and cache
+# Ignore local virtual environment
 .venv/
 venv/
+ENV/
+
+# Python cache
 __pycache__/
 *.pyc
 *.pyo
@@ -10,14 +13,20 @@ __pycache__/
 .git/
 .gitignore
 
-# Trained model artifacts (will be regenerated inside container)
-*.joblib
-model_report.txt
-
 # IDE / OS
 .DS_Store
 .idea/
 .vscode/
+Thumbs.db
 
-# Jupyter
+# Jupyter checkpoints
 .ipynb_checkpoints/
+*.ipynb
+
+# Logs / temp
+*.log
+*.tmp
+model_report.txt
+
+# NOTE: Dataset/ and *.joblib are intentionally NOT ignored here
+# so they are available inside the Docker container for training and inference

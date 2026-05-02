@@ -35,18 +35,36 @@ from sklearn.metrics import roc_auc_score, accuracy_score
 warnings.filterwarnings("ignore")
 
 # ─────────────────────────────────────────────────────────────
-#  PATHS  — everything lives next to this script
+#  PATHS — resolves correctly for:
+#    • Local dev  (python / streamlit run App_training/churn_app.py)
+#    • Docker     (WORKDIR /app, files copied to /app/Dataset/)
+#    • Streamlit Cloud (repo root = /mount/src/<repo>)
 # ─────────────────────────────────────────────────────────────
-BASE      = os.path.dirname(os.path.abspath(__file__))
-TRAIN_CSV = os.path.abspath(os.path.join(BASE, "..", "Dataset", "customer_churn_dataset-training-master.csv.zip"))
-TEST_CSV  = os.path.abspath(os.path.join(BASE, "..", "Dataset", "customer_churn_dataset-testing-master.csv.zip"))
+BASE = os.path.dirname(os.path.abspath(__file__))
 
-MODEL_F   = os.path.join(BASE, "churn_model.joblib")
-SCALER_F  = os.path.join(BASE, "scaler.joblib")          # ← NEW: StandardScaler
-LE_G      = os.path.join(BASE, "le_gender.joblib")
-LE_S      = os.path.join(BASE, "le_subscription.joblib")
-LE_C      = os.path.join(BASE, "le_contract.joblib")
-FEAT_F    = os.path.join(BASE, "feature_names.joblib")
+def _find_csv(filename):
+    """Search for a CSV/zip file in multiple likely locations."""
+    candidates = [
+        os.path.join(BASE, "..", "Dataset", filename),   # local dev & Docker
+        os.path.join(BASE, filename),                      # same dir as script
+        os.path.join("/app", "Dataset", filename),         # Docker absolute
+        os.path.join(BASE, "..", filename),                # repo root
+    ]
+    for p in candidates:
+        p = os.path.abspath(p)
+        if os.path.exists(p):
+            return p
+    return os.path.abspath(candidates[0])  # return default path (will fail gracefully)
+
+TRAIN_CSV = _find_csv("customer_churn_dataset-training-master.csv.zip")
+TEST_CSV  = _find_csv("customer_churn_dataset-testing-master.csv.zip")
+
+MODEL_F  = os.path.join(BASE, "churn_model.joblib")
+SCALER_F = os.path.join(BASE, "scaler.joblib")
+LE_G     = os.path.join(BASE, "le_gender.joblib")
+LE_S     = os.path.join(BASE, "le_subscription.joblib")
+LE_C     = os.path.join(BASE, "le_contract.joblib")
+FEAT_F   = os.path.join(BASE, "feature_names.joblib")
 
 ALL_ARTIFACTS = [MODEL_F, SCALER_F, LE_G, LE_S, LE_C, FEAT_F]
 
@@ -206,9 +224,12 @@ model, scaler, le_g, le_s, le_c, FEATS, STATUS = get_model()
 
 if STATUS == "no_csv":
     st.error(
-        f"**Training CSV not found:**\n\n`{TRAIN_CSV}`\n\n"
-        "Please place `customer_churn_dataset-training-master.csv` "
-        "in the same folder as `churn_app.py` and restart."
+        f"**Training CSV not found!**\n\n"
+        f"Searched for: `customer_churn_dataset-training-master.csv.zip`\n\n"
+        "**Where to place it:**\n"
+        "- Local: `Dataset/customer_churn_dataset-training-master.csv.zip`\n"
+        "- Same folder as `churn_app.py`\n\n"
+        "Download from: https://www.kaggle.com/datasets/muhammadshahidazeem/customer-churn-dataset"
     )
     st.stop()
 

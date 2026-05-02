@@ -15,15 +15,11 @@ build/
 
 # ── Jupyter ───────────────────────────────────────────────────
 .ipynb_checkpoints/
+*.ipynb
 
-# ── ML Artifacts (auto-generated — do NOT commit the model binary) ──
-# Uncomment the lines below if you do NOT want to push .joblib files.
-# churn_model.joblib
-# scaler.joblib
-# le_gender.joblib
-# le_subscription.joblib
-# le_contract.joblib
-# feature_names.joblib
+# ── ML Artifacts (auto-generated — large binary model file) ──
+# The model is 190MB — DO NOT commit it. Other small artifacts are fine.
+App_training/churn_model.joblib
 
 # ── OS junk ───────────────────────────────────────────────────
 .DS_Store
@@ -36,17 +32,10 @@ desktop.ini
 *.swp
 *.swo
 
-# ── Streamlit cache ───────────────────────────────────────────
-.streamlit/
-
 # ── Misc ──────────────────────────────────────────────────────
 *.log
 *.tmp
+model_report.txt
 
-# ── Large Dataset files (exceed GitHub limits — keep local only) ─
-Dataset/
-*.csv
-*.csv.zip
-
-# ── Large Notebook binary ────────────────────────────────────────
-*.ipynb
+# ── NOTE: Dataset/*.csv.zip files are kept (needed for Streamlit Cloud) ──
+# ── NOTE: scaler.joblib, le_*.joblib, feature_names.joblib are kept ──
